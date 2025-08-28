@@ -1,0 +1,6 @@
+#request
+int32 depth
+---
+int32[] sequence
+---
+int32[] partial_sequence
