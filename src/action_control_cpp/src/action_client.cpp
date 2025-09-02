@@ -40,6 +40,7 @@ class ControlActionClient:rclcpp::Node{
 
         
     private:
+
         void goal_response_callback(const handleControl::SharedPtr & goal_handle){
             if (!goal_handle)
             {
@@ -50,44 +51,51 @@ class ControlActionClient:rclcpp::Node{
             }
             
         }
+
         void feedback_callback(handleControl::SharedPtr,const std::shared_ptr<const control::Feedback>feedback){
             std::stringstream ss;
             ss << "Next number in sequence received: ";
-    for (auto number : feedback->partial_sequence) {
-      ss << number << " ";
-      // 공유포인터로 전달 받을수있고 벡터로도 전달 받기 가능하다.
+            for (auto number : feedback->partial_sequence) {
+                ss << number << " ";
+            // 공유포인터로 전달 받을수있고 벡터로도 전달 받기 가능하다.
       
-    }
-    modifiedData = std::move(feedback->partial_sequence);//스택의 값을 전달한다.
-    RCLCPP_INFO(this->get_logger(), ss.str().c_str());
-
+            }
+            modifiedData = std::move(feedback->partial_sequence);//스택의 값을 전달한다.
+            RCLCPP_INFO(this->get_logger(), ss.str().c_str());
         }
+
         void result_callback(const handleControl::WrappedResult &result){
             switch (result.code) {
-      case rclcpp_action::ResultCode::SUCCEEDED:
-        break;
-      case rclcpp_action::ResultCode::ABORTED:
-        RCLCPP_ERROR(this->get_logger(), "Goal was aborted");
-        return;
-      case rclcpp_action::ResultCode::CANCELED:
-        RCLCPP_ERROR(this->get_logger(), "Goal was canceled");
-        return;
-      default:
-        RCLCPP_ERROR(this->get_logger(), "Unknown result code");
-        return;
-    }
-    std::stringstream ss;
-    ss << "Result received: ";
-    for (auto number : result.result->sequence) {
-      ss << number << " ";
-    }
+                case rclcpp_action::ResultCode::SUCCEEDED:
+                    break;
+                case rclcpp_action::ResultCode::ABORTED:
+                    RCLCPP_ERROR(this->get_logger(), "Goal was aborted");
+                    return;
+                case rclcpp_action::ResultCode::CANCELED:
+                    RCLCPP_ERROR(this->get_logger(), "Goal was canceled");
+                    return;
+                default:
+                    RCLCPP_ERROR(this->get_logger(), "Unknown result code");
+                    return;
+            }
 
+            std::stringstream ss;
+            ss << "Result received: ";
+            if (!resultData.empty())
+            {
+                resultData.clear();
+            }
 
-    }
+            for (auto number : result.result->sequence) {
+            ss << number << " ";
+            resultData.push_back(number);
+            }
+        }   
 
         rclcpp_action::Client<control>::SharedPtr client_ptr;
         rclcpp::TimerBase::SharedPtr timer_;
         std::vector<int>modifiedData;
-        std::vector<int> result;
-
+        std::vector<int> resultData;
 };
+
+RCLCPP_COMPONENTS_REGISTER_NODE(ControlActionClient)
