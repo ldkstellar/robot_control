@@ -12,6 +12,47 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
 
+add_library(action_server SHARED
+  src/action_server.cpp)
+target_include_directories(action_server PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+
+ament_target_dependencies(action_server
+  "control_interface"
+  "rclcpp"
+  "rclcpp_action"
+  "rclcpp_components")
+
+rclcpp_components_register_node(action_server PLUGIN "ControlActionServer" EXECUTABLE ControlActionServer)
+
+install(TARGETS
+  action_server
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
+
+# action client
+add_library(action_client SHARED
+  src/action_client.cpp)
+target_include_directories(action_client PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+
+ament_target_dependencies(action_client
+  "control_interface"
+  "rclcpp"
+  "rclcpp_action"
+  "rclcpp_components")
+  
+rclcpp_components_register_node(action_client PLUGIN "ControlActionClient" EXECUTABLE ControlActionClient)
+
+install(TARGETS
+  action_client
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights

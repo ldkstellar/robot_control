@@ -5,12 +5,12 @@
 #include <sstream>
 #include <vector>
 
-#include "rclcpp.hpp"
+#include "rclcpp/rclcpp.hpp"
 #include"control_interface/action/control.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "rclcpp_components/register_node_macro.hpp"
 
-class ControlActionClient:rclcpp::Node{
+class ControlActionClient:public rclcpp::Node{
     public:
         using control = control_interface::action::Control;
         using handleControl = rclcpp_action::ClientGoalHandle<control>;

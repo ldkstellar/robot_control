@@ -2,7 +2,7 @@
 #include <memory>
 #include <thread>
 
-#include "rclcpp.hpp"
+#include "rclcpp/rclcpp.hpp"
 #include"control_interface/action/control.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "rclcpp_components/register_node_macro.hpp"
@@ -11,7 +11,7 @@ class ControlActionServer:public rclcpp::Node{
     public:
         using control = control_interface::action::Control;
         using handleControl = rclcpp_action::ServerGoalHandle<control>;
-        explicit ControlActionServer():Node("controlServer"){
+        explicit ControlActionServer(const rclcpp::NodeOptions & options = rclcpp::NodeOptions()):Node("controlServer",options){
              using namespace std::placeholders;
             action_server = rclcpp_action::create_server<control>(this,"control",
             std::bind(&ControlActionServer::handle_goal,this,_1,_2),
