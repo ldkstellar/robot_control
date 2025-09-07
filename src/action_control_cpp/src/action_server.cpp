@@ -44,7 +44,7 @@ class ControlActionServer:public rclcpp::Node{
         rclcpp::Rate loop_rate(1);
         const auto goal = goal_handle->get_goal();
         auto feedback =std::make_shared<control::Feedback>();
-        auto sequence = feedback->partial_sequence;
+        auto & sequence = feedback->partial_sequence;
         auto result = std::make_shared<control::Result>();
         
         for (int i = 1; i < goal->depth &&rclcpp::ok(); i++)
@@ -58,13 +58,12 @@ class ControlActionServer:public rclcpp::Node{
             }
             else
             {
-                sequence.push_back(1); 
+                result->sequence.push_back(1); 
             }
             loop_rate.sleep();
         }
 
         if (rclcpp::ok()) {
-        result->sequence = sequence;
         goal_handle->succeed(result);
         RCLCPP_INFO(this->get_logger(), "Goal succeeded");
         } 

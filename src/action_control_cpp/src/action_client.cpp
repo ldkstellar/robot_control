@@ -16,7 +16,7 @@ class ControlActionClient:public rclcpp::Node{
         using handleControl = rclcpp_action::ClientGoalHandle<control>;
 
        explicit ControlActionClient(const rclcpp::NodeOptions & options):Node("controlClient",options){
-            this->client_ptr = rclcpp_action::create_client<control>(this,"actuator");
+            this->client_ptr = rclcpp_action::create_client<control>(this,"control");
             this->timer_ = this->create_wall_timer(std::chrono::milliseconds(500),std::bind(&ControlActionClient::send_goal,this));
         }
 
@@ -60,8 +60,8 @@ class ControlActionClient:public rclcpp::Node{
             // 공유포인터로 전달 받을수있고 벡터로도 전달 받기 가능하다.
       
             }
-            modifiedData = std::move(feedback->partial_sequence);//스택의 값을 전달한다.
             RCLCPP_INFO(this->get_logger(), ss.str().c_str());
+            modifiedData = std::move(feedback->partial_sequence);//스택의 값을 전달한다.
         }
 
         void result_callback(const handleControl::WrappedResult &result){
@@ -89,7 +89,8 @@ class ControlActionClient:public rclcpp::Node{
             for (auto number : result.result->sequence) {
             ss << number << " ";
             resultData.push_back(number);
-            }
+        }
+            RCLCPP_INFO(this->get_logger(),ss.str().c_str());
         }   
 
         rclcpp_action::Client<control>::SharedPtr client_ptr;
